@@ -1,4 +1,4 @@
-import { ChatMessage } from '../types';
+import { ChatMessage, ChatResponse } from '../types';
 
 // Mock API responses for local development
 export const mockApiCall = async (endpoint: string, data?: any): Promise<any> => {
@@ -51,4 +51,31 @@ export const loadChatHistory = (): ChatMessage[] => {
     ...message,
     timestamp: new Date(message.timestamp)
   }));
+};
+
+const simulateDelay = () => new Promise(resolve => 
+  setTimeout(resolve, Math.random() * 800 + 200)
+);
+
+export const mockChatApi = async (request: any): Promise<ChatResponse> => {
+  await simulateDelay();
+  
+  // Sample marketing-focused responses
+  const responses: Record<string, string> = {
+    caption: `🌟 **New Product Launch!** 🌟\nJust dropped our sustainable yoga mats!\n✨ Eco-friendly materials\n✨ Non-slip surface\n✨ 100% biodegradable\n\n#EcoFitness #SustainableLiving #YogaJourney`,
+    hashtag: `Top hashtags for eco-fashion:\n#SustainableFashion  #EcoChic  #EthicalStyle\n#SlowFashion  #ConsciousConsumer  #GreenFashion\n#RecycledStyle  #FashionRevolution`,
+    strategy: `**TikTok Growth Plan:**\n1. Weekly behind-the-scenes at ethical factories\n2. "Style Swap Saturday" UGC campaigns\n3. Sustainable fabric care tips\n4. Monthly eco-challenges with branded hashtag\n5. Micro-influencer collabs in sustainability niche`,
+    analytics: `**Performance Insights:**\n✅ 42% more engagement between 6-9PM\n📸 Carousels outperform single images by 27%\n🌱 Sustainable material content gets most shares\n💬 Question-based captions drive 3x more comments`,
+    default: `I'd love to help! Could you share:\n1. Your target audience\n2. Primary platforms\n3. Campaign goals\n4. Brand guidelines?`
+  };
+
+  const content = request.message.toLowerCase();
+  let responseKey: string = 'default';
+
+  if (content.includes('caption')) responseKey = 'caption';
+  else if (content.includes('hashtag')) responseKey = 'hashtag';
+  else if (content.includes('strategy') || content.includes('plan')) responseKey = 'strategy';
+  else if (content.includes('analytics') || content.includes('performance')) responseKey = 'analytics';
+
+  return { response: responses[responseKey] };
 };
